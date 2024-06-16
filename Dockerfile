@@ -1,20 +1,25 @@
-FROM golang:1.16-alpine as build
+FROM golang:1.18-alpine AS build
 
 WORKDIR /app
 
 COPY go.mod go.sum ./
-RUN go mod download
+
+RUN go mod tidy
+
 COPY . .
 
-RUN go build -o go-docker
+RUN CGO_ENABLED=0 GOOS=linux go build -o backend .
 
-FROM alpine:latest
+FROM alpine:3.18
 
 WORKDIR /app
 
-COPY --from=build /app/go-docker .
+COPY --from=build /app/backend .
+
 COPY .env .env
+
+RUN apk --no-cache add ca-certificates tzdata
 
 EXPOSE 5000
 
-CMD ["./go-docker"]
+ENTRYPOINT ["/app/backend"]
