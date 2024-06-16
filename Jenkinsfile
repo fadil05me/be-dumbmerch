@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        BUILD_SERVER = 'finaltask-fadil@40.118.209.246'
+        BUILD_SERVER = 'finaltask-fadil@52.187.151.49'
         DEPLOY_SERVER = 'finaltask-fadil@103.127.134.73'
         DIRECTORY = '/home/finaltask-fadil/build/staging/backend'
         BRANCH = 'staging'
@@ -92,7 +92,7 @@ pipeline {
                 script {
                     sshagent(credentials: ['sshkey']) {
                         sh """
-                            ssh -p 1234 -o StrictHostKeyChecking=no finaltask-fadil@40.118.209.246 << 'EOF'
+                            ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no ${BUILD_SERVER} << 'EOF'
                             if wget --spider -q --server-response http://127.0.0.1:5000/ 2>&1 | grep '404 Not Found'; then
                                 echo "Website is up!"
                             else
@@ -115,7 +115,7 @@ pipeline {
                 script {
                     sshagent(credentials: ['sshkey']) {
                         sh """
-                            ssh -p 1234 -o StrictHostKeyChecking=no finaltask-fadil@40.118.209.246 << 'EOF'
+                            ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no ${BUILD_SERVER} << 'EOF'
                             cd ${DIRECTORY}
                             
                             # Read version from file
