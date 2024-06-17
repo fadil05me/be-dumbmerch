@@ -77,7 +77,7 @@ pipeline {
                         echo "Using version: \${version}"
                         
                         # Run Docker container using the retrieved version
-                        docker run -d --name testcode-be-prod -p 6000:5000 "${REGISTRY_URL}/${IMAGE_NAME}:\${version}"
+                        docker run -d --name testcode-be-prod -p 5050:5000 "${REGISTRY_URL}/${IMAGE_NAME}:\${version}"
                         echo "Docker container started with image tag: \${version}"
                         
                         exit
@@ -94,7 +94,7 @@ pipeline {
                     sshagent(credentials: ['sshkey']) {
                         sh """
                             ssh -p ${SSH_PORT} -o StrictHostKeyChecking=no ${BUILD_SERVER} << 'EOF'
-                            if wget --spider -q --server-response http://127.0.0.1:6000/ 2>&1 | grep '404 Not Found'; then
+                            if wget --spider -q --server-response http://127.0.0.1:5050/ 2>&1 | grep '404 Not Found'; then
                                 echo "Website is up!"
                             else
                                 echo "Website is down!"
